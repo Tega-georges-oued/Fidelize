@@ -1,0 +1,145 @@
+import { useState } from "react";
+import { Sidebar } from "./components/Layout/Sidebar";
+import { Header } from "./components/Layout/Header";
+import { DashboardOverview } from "./components/Pages/Dashboard/DashboardOverview";
+import { EntitiesList } from "./components/Pages/Entities/EntitiesList";
+import Contacts from "./components/Pages/Contacts/Contacts";
+import Missions from "./components/Pages/Missions/Missions";
+import Opportunities from "./components/Pages/Opportunities/Opportunities";
+import Analysis from "./components/Pages/Analysis/Analysis";
+import Activities from "./components/Pages/Activities/Activities";
+import Templates from "./components/Pages/DocTemplates/Templates";
+import Reports from "./components/Pages/Reportings/Reports";
+import Settings from "./components/Pages/Settings/Settings";
+import Fidelization from "./components/Pages/Fidelisations/Fidelization";
+
+function App() {
+  const [activeSection, setActiveSection] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return <DashboardOverview />;
+      case "entities":
+        return <EntitiesList />;
+      case "contacts":
+        return <Contacts />;
+      case "missions":
+        return <Missions />;
+      case "activities":
+        return <Activities />;
+      case "opportunities":
+        return <Opportunities />;
+      case "needs-analysis":
+        return <Analysis />;
+      case "communications":
+        return <Fidelization />;
+      case "calendar":
+        return (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Calendrier
+            </h1>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+              <p className="text-gray-600">Module en cours de développement</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Planification et suivi des activités avec intégration calendrier
+              </p>
+            </div>
+          </div>
+        );
+      case "reports":
+        return <Reports />;
+      case "documents":
+        return (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Gestion Documentaire
+            </h1>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+              <p className="text-gray-600">Module en cours de développement</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Templates de documents avec préremplissage automatique
+              </p>
+            </div>
+          </div>
+        );
+      case "templates":
+        return <Templates />;
+      case "alerts":
+        return (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Alertes et Notifications
+            </h1>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+              <p className="text-gray-600">Module en cours de développement</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Système d'alertes automatiques et notifications intelligentes
+              </p>
+            </div>
+          </div>
+        );
+      case "security":
+        return (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Sécurité et Conformité
+            </h1>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+              <p className="text-gray-600">Module en cours de développement</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Gestion des permissions RBAC et conformité RGPD
+              </p>
+            </div>
+          </div>
+        );
+      case "data-management":
+        return (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Gestion des Données
+            </h1>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+              <p className="text-gray-600">Module en cours de développement</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Import/export, dédoublonnage et qualité des données
+              </p>
+            </div>
+          </div>
+        );
+      case "settings":
+        return <Settings />;
+      default:
+        return <DashboardOverview />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div
+        className={`${
+          sidebarOpen ? "w-64" : "w-0"
+        } transition-all duration-300 overflow-hidden`}
+      >
+        <Sidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-8">{renderContent()}</div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default App;
