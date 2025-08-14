@@ -9,8 +9,15 @@ import {
   DollarSign,
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Calendar,
+  Phone,
+  Mail,
+  MessageSquare
 } from 'lucide-react';
+import { useStore } from '../../../store/useStore';
+import { mockEntities } from '../Entities/EntitiesList';
+import { mockOpportunities } from '../Opportunities/Opportunities';
 
 interface KPICardProps {
   title: string;
@@ -50,42 +57,56 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, change, changeType, ico
 };
 
 export const DashboardOverview: React.FC = () => {
+  const { contacts } = useStore();
+  
+  // Calculs des KPIs réels
+  const totalEntities = mockEntities.length;
+  const totalContacts = contacts.length;
+  const activeOpportunities = mockOpportunities.filter(o => o.status === 'submitted').length;
+  const wonOpportunities = mockOpportunities.filter(o => o.status === 'won').length;
+  const totalOpportunityValue = mockOpportunities
+    .filter(o => o.status === 'submitted')
+    .reduce((sum, opp) => sum + (opp.value * opp.probability / 100), 0);
+  const conversionRate = mockOpportunities.length > 0 
+    ? (wonOpportunities / mockOpportunities.length) * 100 
+    : 0;
+
   const kpis = [
     {
       title: 'Entreprises totales',
-      value: '1,247',
-      change: 12,
+      value: totalEntities.toString(),
+      change: 8,
       changeType: 'increase' as const,
       icon: <Building2 className="w-6 h-6 text-white" />,
       color: 'bg-blue-500'
     },
     {
       title: 'Contacts actifs',
-      value: '3,891',
-      change: 8,
+      value: totalContacts.toString(),
+      change: 15,
       changeType: 'increase' as const,
       icon: <Users className="w-6 h-6 text-white" />,
       color: 'bg-green-500'
     },
     {
-      title: 'Missions en cours',
-      value: '47',
-      change: -5,
-      changeType: 'decrease' as const,
+      title: 'Opportunités actives',
+      value: activeOpportunities.toString(),
+      change: 12,
+      changeType: 'increase' as const,
       icon: <Briefcase className="w-6 h-6 text-white" />,
       color: 'bg-orange-500'
     },
     {
-      title: 'Opportunités actives',
-      value: '23',
-      change: 15,
+      title: 'Opportunités gagnées',
+      value: wonOpportunities.toString(),
+      change: 25,
       changeType: 'increase' as const,
       icon: <Target className="w-6 h-6 text-white" />,
       color: 'bg-purple-500'
     },
     {
       title: 'CA potentiel',
-      value: '€2.4M',
+      value: `${(totalOpportunityValue / 1_000_000).toFixed(1)}M FCFA`,
       change: 22,
       changeType: 'increase' as const,
       icon: <DollarSign className="w-6 h-6 text-white" />,
@@ -93,8 +114,8 @@ export const DashboardOverview: React.FC = () => {
     },
     {
       title: 'Taux de conversion',
-      value: '68%',
-      change: 3,
+      value: `${conversionRate.toFixed(0)}%`,
+      change: 5,
       changeType: 'increase' as const,
       icon: <TrendingUp className="w-6 h-6 text-white" />,
       color: 'bg-indigo-500'
@@ -104,73 +125,97 @@ export const DashboardOverview: React.FC = () => {
   const recentActivities = [
     {
       id: 1,
-      type: 'mission',
-      title: 'Mission PCA - Société ALPHA',
-      description: 'Nouvelle mission de Plan de Continuité d\'Activité initiée',
+      type: 'opportunity',
+      title: 'Nouvelle opportunité - ALPHA Industries',
+      description: 'Audit annuel pour l\'exercice 2024 - 45M FCFA',
       time: 'Il y a 2 heures',
-      icon: <Briefcase className="w-4 h-4 text-orange-600" />,
+      icon: <Target className="w-4 h-4 text-purple-600" />,
       status: 'new'
     },
     {
       id: 2,
-      type: 'opportunity',
-      title: 'Opportunité - Audit légal BETA Corp',
-      description: 'Proposition envoyée, en attente de retour client',
+      type: 'contact',
+      title: 'Nouveau contact - BETA Télécoms',
+      description: 'Marie Ouédraogo ajoutée comme Directrice Financière',
       time: 'Il y a 4 heures',
-      icon: <Target className="w-4 h-4 text-purple-600" />,
-      status: 'pending'
+      icon: <Users className="w-4 h-4 text-green-600" />,
+      status: 'new'
     },
     {
       id: 3,
-      type: 'completed',
-      title: 'Mission formation - GAMMA Industries',
-      description: 'Formation comptabilité avancée terminée avec succès',
+      type: 'opportunity',
+      title: 'Opportunité gagnée - GAMMA ONG',
+      description: 'Formation en comptabilité - 15M FCFA',
       time: 'Il y a 1 jour',
       icon: <CheckCircle className="w-4 h-4 text-green-600" />,
       status: 'completed'
     },
     {
       id: 4,
-      type: 'alert',
-      title: 'Échéance proche - Mission DELTA',
-      description: 'Livrable attendu dans 3 jours',
+      type: 'communication',
+      title: 'Email de suivi envoyé',
+      description: 'Suivi automatique pour ALPHA Industries',
       time: 'Il y a 2 jours',
-      icon: <AlertTriangle className="w-4 h-4 text-red-600" />,
-      status: 'urgent'
+      icon: <Mail className="w-4 h-4 text-blue-600" />,
+      status: 'completed'
     }
   ];
 
   const upcomingTasks = [
     {
       id: 1,
-      title: 'Révision rapport audit - EPSILON',
-      dueDate: 'Aujourd\'hui 16:00',
+      title: 'Appel de suivi - ALPHA Industries',
+      dueDate: 'Aujourd\'hui 14:00',
       priority: 'high',
-      assignee: 'Marie Dubois'
+      assignee: 'Jean Martin',
+      type: 'call'
     },
     {
       id: 2,
-      title: 'Appel de suivi - Prospect ZETA',
+      title: 'Présentation offre - BETA Télécoms',
       dueDate: 'Demain 10:00',
       priority: 'medium',
-      assignee: 'Jean Martin'
+      assignee: 'Marie Dubois',
+      type: 'meeting'
     },
     {
       id: 3,
-      title: 'Préparation formation PCA',
-      dueDate: 'Vendredi 14:00',
-      priority: 'medium',
-      assignee: 'Sophie Laurent'
+      title: 'Envoi proposition - Nouveau prospect',
+      dueDate: 'Vendredi 16:00',
+      priority: 'low',
+      assignee: 'Pierre Durand',
+      type: 'email'
     }
   ];
 
+  const getTaskIcon = (type: string) => {
+    switch (type) {
+      case 'call':
+        return <Phone className="w-3 h-3 mr-1" />;
+      case 'meeting':
+        return <Calendar className="w-3 h-3 mr-1" />;
+      case 'email':
+        return <Mail className="w-3 h-3 mr-1" />;
+      case 'sms':
+        return <MessageSquare className="w-3 h-3 mr-1" />;
+      default:
+        return <Clock className="w-3 h-3 mr-1" />;
+    }
+  };
   return (
     <div className="space-y-6">
       {/* En-tête */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-          <p className="text-gray-600">Vue d'ensemble de votre activité CRM</p>
+          <p className="text-gray-600">
+            Vue d'ensemble de votre activité CRM - {new Date().toLocaleDateString('fr-FR', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </p>
         </div>
         <div className="flex items-center space-x-3">
           <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -178,6 +223,9 @@ export const DashboardOverview: React.FC = () => {
             <option>90 derniers jours</option>
             <option>Cette année</option>
           </select>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Actualiser
+          </button>
         </div>
       </div>
 
@@ -234,7 +282,10 @@ export const DashboardOverview: React.FC = () => {
                 <div key={task.id} className="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                      <div className="flex items-center">
+                        {getTaskIcon(task.type)}
+                        <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                      </div>
                       <div className="flex items-center mt-2 text-xs text-gray-500">
                         <Clock className="w-3 h-3 mr-1" />
                         <span>{task.dueDate}</span>
@@ -243,14 +294,60 @@ export const DashboardOverview: React.FC = () => {
                     </div>
                     <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                       task.priority === 'high' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
+                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
                     }`}>
-                      {task.priority === 'high' ? 'Haute' : 'Moyenne'}
+                      {task.priority === 'high' ? 'Haute' : 
+                       task.priority === 'medium' ? 'Moyenne' : 'Basse'}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+            <div className="mt-4 text-center">
+              <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                Voir toutes les tâches →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Actions rapides</h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+              <Building2 className="w-6 h-6 text-blue-600" />
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Nouvelle Entreprise</div>
+                <div className="text-sm text-gray-500">Ajouter un client/prospect</div>
+              </div>
+            </button>
+            <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors">
+              <Users className="w-6 h-6 text-green-600" />
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Nouveau Contact</div>
+                <div className="text-sm text-gray-500">Ajouter un contact</div>
+              </div>
+            </button>
+            <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors">
+              <Target className="w-6 h-6 text-purple-600" />
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Nouvelle Opportunité</div>
+                <div className="text-sm text-gray-500">Créer une opportunité</div>
+              </div>
+            </button>
+            <button className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors">
+              <Briefcase className="w-6 h-6 text-orange-600" />
+              <div className="text-left">
+                <div className="font-medium text-gray-900">Nouvelle Mission</div>
+                <div className="text-sm text-gray-500">Créer une mission</div>
+              </div>
+            </button>
           </div>
         </div>
       </div>
