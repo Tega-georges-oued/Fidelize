@@ -12,7 +12,12 @@ import {
   Eye,
   Edit,
   Trash2,
+  Phone,
+  Mail,
+  Calendar,
 } from "lucide-react";
+import Modal from "../../UI/Modal";
+import Button from "../../UI/Button";
 
 export interface Entity {
   id: string;
@@ -80,6 +85,8 @@ export const EntitiesList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedSector, setSelectedSector] = useState<string>("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -132,7 +139,10 @@ export const EntitiesList: React.FC = () => {
             Gestion centralisée de vos clients et prospects
           </p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+        >
           <Plus className="w-4 h-4" />
           <span>Nouvelle entreprise</span>
         </button>
@@ -296,6 +306,7 @@ export const EntitiesList: React.FC = () => {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                       <div className="py-2">
                         <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                          {/* onClick={() => setSelectedEntity(entity)} */}
                           <Eye className="w-4 h-4" />
                           <span>Voir les détails</span>
                         </button>
@@ -323,6 +334,259 @@ export const EntitiesList: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Create Entity Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Nouvelle Entreprise"
+        size="lg"
+      >
+        <form className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nom de l'entreprise
+              </label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ex: ALPHA Industries SA"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Secteur d'activité
+              </label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Sélectionner un secteur</option>
+                <option value="Industrie">Industrie</option>
+                <option value="Télécommunications">Télécommunications</option>
+                <option value="Banque">Banque</option>
+                <option value="ONG">ONG</option>
+                <option value="EPE">EPE</option>
+                <option value="Commerce">Commerce</option>
+                <option value="Services">Services</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Région
+              </label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Sélectionner une région</option>
+                <option value="Dakar">Dakar</option>
+                <option value="Thiès">Thiès</option>
+                <option value="Saint-Louis">Saint-Louis</option>
+                <option value="Kaolack">Kaolack</option>
+                <option value="Ziguinchor">Ziguinchor</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Statut
+              </label>
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="prospect">Prospect</option>
+                <option value="client">Client</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Chiffre d'affaires (FCFA)
+              </label>
+              <input
+                type="number"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="2500000"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nombre d'employés
+              </label>
+              <input
+                type="number"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="150"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Priorité
+            </label>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="low">Faible</option>
+              <option value="medium">Moyenne</option>
+              <option value="high">Haute</option>
+              <option value="critical">Critique</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button type="submit">Créer l'Entreprise</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Entity Detail Modal */}
+      {selectedEntity && (
+        <Modal
+          isOpen={!!selectedEntity}
+          onClose={() => setSelectedEntity(null)}
+          title={selectedEntity.companyName}
+          size="xl"
+        >
+          <div className="space-y-6">
+            {/* Entity Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Informations générales
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium">Secteur:</span>{" "}
+                    {selectedEntity.sector}
+                  </div>
+                  <div>
+                    <span className="font-medium">Région:</span>{" "}
+                    {selectedEntity.region}
+                  </div>
+                  <div>
+                    <span className="font-medium">Statut:</span>{" "}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        selectedEntity.status
+                      )}`}
+                    >
+                      {selectedEntity.status === "client"
+                        ? "Client"
+                        : "Prospect"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Priorité:</span>{" "}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
+                        selectedEntity.priority
+                      )}`}
+                    >
+                      {selectedEntity.priority === "critical"
+                        ? "Critique"
+                        : selectedEntity.priority === "high"
+                        ? "Haute"
+                        : selectedEntity.priority === "medium"
+                        ? "Moyenne"
+                        : "Faible"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Données financières
+                </h4>
+                <div className="space-y-2 text-sm">
+                  {selectedEntity.revenue && (
+                    <div>
+                      <span className="font-medium">CA:</span>{" "}
+                      {formatCurrency(selectedEntity.revenue)}
+                    </div>
+                  )}
+                  {selectedEntity.employees && (
+                    <div>
+                      <span className="font-medium">Employés:</span>{" "}
+                      {selectedEntity.employees}
+                    </div>
+                  )}
+                  <div>
+                    <span className="font-medium">Score:</span>{" "}
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      <span className="font-semibold">
+                        {selectedEntity.score}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Activité</h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium">Contacts:</span>{" "}
+                    {selectedEntity.contactsCount}
+                  </div>
+                  <div>
+                    <span className="font-medium">Missions:</span>{" "}
+                    {selectedEntity.missionsCount}
+                  </div>
+                  {selectedEntity.lastInteraction && (
+                    <div>
+                      <span className="font-medium">Dernière interaction:</span>{" "}
+                      {new Date(
+                        selectedEntity.lastInteraction
+                      ).toLocaleDateString("fr-FR")}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div>
+              <h4 className="font-medium text-gray-900 mb-3">
+                Actions rapides
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Appeler
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  RDV
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Opportunité
+                </Button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 pt-4 border-t">
+              <Button variant="secondary">
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+              <Button>Voir tous les détails</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

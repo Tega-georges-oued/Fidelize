@@ -6,7 +6,7 @@ import {
   Database,
   Palette,
   Globe,
-  ArchiveIcon,
+  Archive,
   Save,
   Edit,
   Badge,
@@ -16,6 +16,15 @@ import Button from "../../UI/Button";
 
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  // Exemple de gestion d'état pour le formulaire de profil
+  const [profile, setProfile] = useState({
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    phone: "+33 1 23 45 67 89",
+    position: "Directeur Commercial",
+    department: "Commercial",
+  });
 
   const tabs = [
     { id: "profile", name: "Profil", icon: User },
@@ -25,8 +34,14 @@ const Settings: React.FC = () => {
     { id: "data", name: "Données", icon: Database },
     { id: "appearance", name: "Apparence", icon: Palette },
     { id: "system", name: "Système", icon: Globe },
-    { id: "backup", name: "Sauvegarde", icon: ArchiveIcon },
+    { id: "backup", name: "Sauvegarde", icon: Archive },
   ];
+
+  const handleProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -39,42 +54,66 @@ const Settings: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Prénom
                   </label>
                   <input
+                    id="firstName"
+                    name="firstName"
                     type="text"
-                    defaultValue="John"
+                    value={profile.firstName}
+                    onChange={handleProfileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Nom
                   </label>
                   <input
+                    id="lastName"
+                    name="lastName"
                     type="text"
-                    defaultValue="Doe"
+                    value={profile.lastName}
+                    onChange={handleProfileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Email
                   </label>
                   <input
+                    id="email"
+                    name="email"
                     type="email"
-                    defaultValue="john.doe@example.com"
+                    value={profile.email}
+                    onChange={handleProfileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Téléphone
                   </label>
                   <input
+                    id="phone"
+                    name="phone"
                     type="tel"
-                    defaultValue="+33 1 23 45 67 89"
+                    value={profile.phone}
+                    onChange={handleProfileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -87,20 +126,35 @@ const Settings: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="position"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Poste
                   </label>
                   <input
+                    id="position"
+                    name="position"
                     type="text"
-                    defaultValue="Directeur Commercial"
+                    value={profile.position}
+                    onChange={handleProfileChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="department"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Département
                   </label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <select
+                    id="department"
+                    name="department"
+                    value={profile.department}
+                    onChange={handleProfileChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
                     <option>Commercial</option>
                     <option>Marketing</option>
                     <option>Support</option>
@@ -168,6 +222,7 @@ const Settings: React.FC = () => {
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
+                        id={notification.id}
                         className="sr-only peer"
                         defaultChecked
                       />
@@ -209,7 +264,11 @@ const Settings: React.FC = () => {
                       </div>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" />
+                      <input
+                        type="checkbox"
+                        id={notification.id}
+                        className="sr-only peer"
+                      />
                       <div className="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                     </label>
                   </div>
@@ -228,28 +287,40 @@ const Settings: React.FC = () => {
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="currentPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Mot de passe actuel
                   </label>
                   <input
+                    id="currentPassword"
                     type="password"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Nouveau mot de passe
                   </label>
                   <input
+                    id="newPassword"
                     type="password"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Confirmer le nouveau mot de passe
                   </label>
                   <input
+                    id="confirmPassword"
                     type="password"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -305,7 +376,7 @@ const Settings: React.FC = () => {
                   },
                 ].map((session, index) => (
                   <div
-                    key={index}
+                    key={`session-${index}`}
                     className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                   >
                     <div>
@@ -389,6 +460,7 @@ const Settings: React.FC = () => {
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
+                      id="dailyBackup"
                       className="sr-only peer"
                       defaultChecked
                     />
@@ -403,7 +475,7 @@ const Settings: React.FC = () => {
           </div>
         );
 
-      case "data":
+      case "integrations":
         return (
           <Card>
             <h3 className="text-lg font-medium text-gray-900 mb-6">
@@ -453,11 +525,11 @@ const Settings: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Badge
-                    // variant={
-                    //   integration.status === "connected"
-                    //     ? "success"
-                    //     : "default"
-                    // }
+                      variant={
+                        integration.status === "connected"
+                          ? "success"
+                          : "default"
+                      }
                     >
                       {integration.status === "connected"
                         ? "Connecté"
@@ -475,7 +547,7 @@ const Settings: React.FC = () => {
           </Card>
         );
 
-      case "data":
+      case "backup":
         return (
           <Card>
             <h3 className="text-lg font-medium text-gray-900 mb-6">
@@ -536,7 +608,7 @@ const Settings: React.FC = () => {
                     },
                   ].map((backup, index) => (
                     <div
-                      key={index}
+                      key={`backup-${index}`}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                     >
                       <div>
@@ -546,7 +618,7 @@ const Settings: React.FC = () => {
                         <p className="text-sm text-gray-600">{backup.size}</p>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {/* <Badge variant="success">Réussie</Badge> */}
+                        <Badge variant="success">Réussie</Badge>
                         <Button variant="secondary" size="sm">
                           Télécharger
                         </Button>
@@ -624,6 +696,7 @@ const Settings: React.FC = () => {
                     key={color.name}
                     className={`w-12 h-12 rounded-full ${color.color} ring-2 ring-offset-2 ring-transparent hover:ring-gray-300 focus:ring-gray-300`}
                     title={color.name}
+                    aria-label={`Sélectionner la couleur ${color.name}`}
                   />
                 ))}
               </div>
@@ -633,7 +706,10 @@ const Settings: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Langue
               </h3>
-              <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select
+                id="language"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option value="fr">Français</option>
                 <option value="en">English</option>
                 <option value="es">Español</option>
@@ -719,7 +795,12 @@ const Settings: React.FC = () => {
         );
 
       default:
-        return null;
+        return (
+          <div className="text-gray-600">
+            Sélectionnez une section dans la barre latérale pour afficher les
+            paramètres.
+          </div>
+        );
     }
   };
 
