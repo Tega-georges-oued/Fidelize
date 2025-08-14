@@ -28,7 +28,6 @@ import {
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { mockEntities as entities } from "../Entities/EntitiesList";
-import Modal from "../../UI/Modal";
 
 export interface Opportunity {
   id: string;
@@ -131,9 +130,6 @@ export default function Opportunities() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOpportunity, setSelectedOpportunity] =
-    useState<Opportunity | null>(null);
 
   // Filtrage des opportunités
   const filteredOpportunities = mockOpportunities.filter((opportunity) => {
@@ -249,7 +245,7 @@ export default function Opportunities() {
             Suivez vos opportunités commerciales et offres
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button>
           <PlusIcon className="h-5 w-5 mr-2" />
           Nouvelle Opportunité
         </Button>
@@ -413,7 +409,6 @@ export default function Opportunities() {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                       <div className="py-2">
                         <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
-                          {/* onClick={() => setSelectedOpportunity(opportunity)} */}
                           <Eye className="w-4 h-4" />
                           <span>Voir les détails</span>
                         </button>
@@ -434,241 +429,6 @@ export default function Opportunities() {
           ))}
         </div>
       </div>
-
-      {/* Create Opportunity Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Nouvelle Opportunité"
-        size="lg"
-      >
-        <form className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Titre de l'opportunité
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Audit annuel pour ALPHA Industries"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Entreprise
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner une entreprise</option>
-                {entities.map((entity) => (
-                  <option key={entity.id} value={entity.id}>
-                    {entity.companyName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type d'opportunité
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner un type</option>
-                <option value="spontaneous">Spontanée</option>
-                <option value="technical">Technique</option>
-                <option value="tender">Appel d'offres</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Valeur estimée (FCFA)
-              </label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="45000000"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Probabilité de succès (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="75"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date limite
-              </label>
-              <input
-                type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Description détaillée de l'opportunité..."
-            ></textarea>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button type="submit">Créer l'Opportunité</Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Opportunity Detail Modal */}
-      {selectedOpportunity && (
-        <Modal
-          isOpen={!!selectedOpportunity}
-          onClose={() => setSelectedOpportunity(null)}
-          title={selectedOpportunity.title}
-          size="xl"
-        >
-          <div className="space-y-6">
-            {/* Opportunity Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">
-                  Informations Générales
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium">Entreprise:</span>{" "}
-                    {getEntityName(selectedOpportunity.entityId)}
-                  </div>
-                  <div>
-                    <span className="font-medium">Type:</span>{" "}
-                    {getTypeBadge(selectedOpportunity.type)}
-                  </div>
-                  <div>
-                    <span className="font-medium">Statut:</span>{" "}
-                    {getStatusBadge(selectedOpportunity.status)}
-                  </div>
-                  <div>
-                    <span className="font-medium">Créée le:</span>{" "}
-                    {format(
-                      new Date(selectedOpportunity.createdAt),
-                      "dd MMM yyyy",
-                      { locale: fr }
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Financier</h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium">Valeur:</span>{" "}
-                    {formatCurrency(selectedOpportunity.value)}
-                  </div>
-                  <div>
-                    <span className="font-medium">Probabilité:</span>{" "}
-                    <span
-                      className={getProbabilityColor(
-                        selectedOpportunity.probability
-                      )}
-                    >
-                      {selectedOpportunity.probability}%
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-medium">Valeur pondérée:</span>{" "}
-                    {formatCurrency(
-                      (selectedOpportunity.value *
-                        selectedOpportunity.probability) /
-                        100
-                    )}
-                  </div>
-                  {selectedOpportunity.requiresApproval && (
-                    <div>
-                      <span className="font-medium">Approbation:</span>{" "}
-                      <span className="text-orange-600">Requise</span>
-                      {selectedOpportunity.approvedBy && (
-                        <span className="text-green-600">
-                          {" "}
-                          - Approuvée par {selectedOpportunity.approvedBy}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Planning</h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium">Échéance:</span>{" "}
-                    {format(
-                      new Date(selectedOpportunity.deadline),
-                      "dd MMM yyyy",
-                      { locale: fr }
-                    )}
-                  </div>
-                  <div>
-                    <span className="font-medium">Jours restants:</span>{" "}
-                    {Math.ceil(
-                      (new Date(selectedOpportunity.deadline).getTime() -
-                        new Date().getTime()) /
-                        (1000 * 60 * 60 * 24)
-                    )}{" "}
-                    jours
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div>
-              <h4 className="font-medium text-gray-900 mb-2">Description</h4>
-              <p className="text-gray-600">{selectedOpportunity.description}</p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 pt-4 border-t">
-              <Button variant="secondary">
-                <Edit className="h-4 w-4 mr-2" />
-                Modifier
-              </Button>
-              {selectedOpportunity.status === "draft" && (
-                <Button>Soumettre l'offre</Button>
-              )}
-              {selectedOpportunity.status === "submitted" && (
-                <>
-                  <Button variant="success">Marquer comme gagnée</Button>
-                  <Button variant="danger">Marquer comme perdue</Button>
-                </>
-              )}
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }

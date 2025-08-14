@@ -3,7 +3,6 @@ import { useStore } from "../../../store/useStore";
 import Card from "../../UI/Card";
 import Button from "../../UI/Button";
 import Badge from "../../UI/Badge";
-import Modal from "../../UI/Modal";
 import { mockEntities as entities } from "../Entities/EntitiesList";
 import {
   PlusIcon,
@@ -19,8 +18,6 @@ export default function Contacts() {
   const { contacts } = useStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEntityId, setSelectedEntityId] = useState<string>("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<any>(null);
 
   // Filtrage des contacts
   const filteredContacts = contacts.filter((contact) => {
@@ -76,7 +73,7 @@ export default function Contacts() {
             Gérez les contacts clés de vos entreprises
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button>
           <PlusIcon className="h-5 w-5 mr-2" />
           Nouveau Contact
         </Button>
@@ -156,7 +153,6 @@ export default function Contacts() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {/* onClick={() => setSelectedContact(contact)} */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
                 </th>
@@ -291,245 +287,6 @@ export default function Contacts() {
           </div>
         )}
       </Card>
-
-      {/* Create Contact Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Nouveau Contact"
-        size="lg"
-      >
-        <form className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nom complet
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Jean Dupont"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Entreprise
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner une entreprise</option>
-                {entities.map((entity) => (
-                  <option key={entity.id} value={entity.id}>
-                    {entity.companyName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rôle/Fonction
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Directeur Général"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="jean.dupont@entreprise.com"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Téléphone
-              </label>
-              <input
-                type="tel"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="+226 70 12 34 56"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                WhatsApp (optionnel)
-              </label>
-              <input
-                type="tel"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="+226 70 12 34 56"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="ml-2 text-sm text-gray-700">
-                Contact principal de l'entreprise
-              </span>
-            </label>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button type="submit">Créer le Contact</Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Contact Detail Modal */}
-      {selectedContact && (
-        <Modal
-          isOpen={!!selectedContact}
-          onClose={() => setSelectedContact(null)}
-          title={`Détails - ${selectedContact.name}`}
-          size="lg"
-        >
-          <div className="space-y-6">
-            {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">
-                  Informations personnelles
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium">Nom:</span>{" "}
-                    {selectedContact.name}
-                  </div>
-                  <div>
-                    <span className="font-medium">Rôle:</span>{" "}
-                    {selectedContact.role}
-                  </div>
-                  <div>
-                    <span className="font-medium">Email:</span>{" "}
-                    <a
-                      href={`mailto:${selectedContact.email}`}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {selectedContact.email}
-                    </a>
-                  </div>
-                  <div>
-                    <span className="font-medium">Téléphone:</span>{" "}
-                    <a
-                      href={`tel:${selectedContact.phone}`}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {selectedContact.phone}
-                    </a>
-                  </div>
-                  {selectedContact.whatsapp && (
-                    <div>
-                      <span className="font-medium">WhatsApp:</span>{" "}
-                      <a
-                        href={`https://wa.me/${selectedContact.whatsapp.replace(
-                          /[^0-9]/g,
-                          ""
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-600 hover:text-green-800"
-                      >
-                        {selectedContact.whatsapp}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Entreprise</h4>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-medium">Nom:</span>{" "}
-                    {getEntityName(selectedContact.entityId)}
-                  </div>
-                  <div>
-                    <span className="font-medium">Statut:</span>{" "}
-                    {getStatusBadge(getEntityStatus(selectedContact.entityId))}
-                  </div>
-                  <div>
-                    <span className="font-medium">Type de contact:</span>{" "}
-                    {selectedContact.isPrimary ? (
-                      <Badge variant="success" size="sm">
-                        Principal
-                      </Badge>
-                    ) : (
-                      <Badge variant="default" size="sm">
-                        Secondaire
-                      </Badge>
-                    )}
-                  </div>
-                  <div>
-                    <span className="font-medium">Ajouté le:</span>{" "}
-                    {new Date(selectedContact.createdAt).toLocaleDateString(
-                      "fr-FR"
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div>
-              <h4 className="font-medium text-gray-900 mb-3">
-                Actions rapides
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" size="sm">
-                  <PhoneIcon className="h-4 w-4 mr-2" />
-                  Appeler
-                </Button>
-                <Button variant="secondary" size="sm">
-                  <EnvelopeIcon className="h-4 w-4 mr-2" />
-                  Envoyer un email
-                </Button>
-                {selectedContact.whatsapp && (
-                  <Button variant="secondary" size="sm">
-                    📱 WhatsApp
-                  </Button>
-                )}
-                <Button variant="secondary" size="sm">
-                  📅 Planifier RDV
-                </Button>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 pt-4 border-t">
-              <Button variant="secondary">
-                <Edit className="h-4 w-4 mr-2" />
-                Modifier
-              </Button>
-              <Button variant="danger">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }
