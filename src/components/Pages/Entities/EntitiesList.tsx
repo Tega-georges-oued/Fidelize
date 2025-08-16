@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import EntityForm from "./EntityForm";
 import {
   Building2,
   Search,
@@ -12,7 +13,12 @@ import {
   Eye,
   Edit,
   Trash2,
+  Phone,
+  Mail,
+  Calendar
 } from "lucide-react";
+import Modal from "../../UI/Modal";
+import Button from "../../UI/Button";
 
 export interface Entity {
   id: string;
@@ -80,6 +86,10 @@ export const EntitiesList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedSector, setSelectedSector] = useState<string>("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
+  const [entitiesList, setEntitiesList] = useState<Entity[]>(mockEntities);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -110,7 +120,38 @@ export const EntitiesList: React.FC = () => {
     }).format(amount);
   };
 
-  const filteredEntities = entities.filter((entity) => {
+  const handleSaveEntity = (entityData: Omit<Entity, 'id'>) => {
+    if (editingEntity) {
+      // Modifier une entité existante
+      setEntitiesList(prev => prev.map(entity => 
+        entity.id === editingEntity.id 
+          ? { ...entityData, id: editingEntity.id }
+          : entity
+      ));
+    } else {
+      // Créer une nouvelle entité
+      const newEntity: Entity = {
+        ...entityData,
+        id: Date.now().toString(),
+      };
+      setEntitiesList(prev => [...prev, newEntity]);
+    }
+    setEditingEntity(null);
+    setIsModalOpen(false);
+  };
+
+  const handleEditEntity = (entity: Entity) => {
+    setEditingEntity(entity);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteEntity = (entityId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette entreprise ?')) {
+      setEntitiesList(prev => prev.filter(entity => entity.id !== entityId));
+    }
+  };
+
+  const filteredEntities = entitiesList.filter((entity) => {
     const matchesSearch =
       entity.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       entity.sector.toLowerCase().includes(searchTerm.toLowerCase());
@@ -132,7 +173,12 @@ export const EntitiesList: React.FC = () => {
             Gestion centralisée de vos clients et prospects
           </p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+        <button 
+          onClick={() => {
+            setEditingEntity(null);
+            setIsModalOpen(true);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
           <Plus className="w-4 h-4" />
           <span>Nouvelle entreprise</span>
         </button>
@@ -295,15 +341,23 @@ export const EntitiesList: React.FC = () => {
 
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                       <div className="py-2">
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                        <button 
+                          onClick={() => setSelectedEntity(entity)}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
                           <Eye className="w-4 h-4" />
                           <span>Voir les détails</span>
                         </button>
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                        <button 
+                          onClick={() => handleEditEntity(entity)}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+                        >
                           <Edit className="w-4 h-4" />
                           <span>Modifier</span>
                         </button>
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
+                        <button 
+                          onClick={() => handleDeleteEntity(entity.id)}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                        >
                           <Trash2 className="w-4 h-4" />
                           <span>Supprimer</span>
                         </button>
@@ -323,6 +377,151 @@ export const EntitiesList: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Create Entity Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingEntity(null);
+        }}
+        title={editingEntity ? "Modifier l'Entreprise" : "Nouvelle Entreprise"}
+        size="lg"
+      >
+        <EntityForm
+          entity={editingEntity}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingEntity(null);
+          }}
+          onSave={handleSaveEntity}
+        />
+      </Modal>
+
+      {/* Entity Detail Modal */}
+      {selectedEntity && (
+        <Modal
+          isOpen={!!selectedEntity}
+          onClose={() => setSelectedEntity(null)}
+          title={selectedEntity.companyName}
+          size="xl"
+        >
+          <div className="space-y-6">
+            {/* Entity Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Informations générales
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium">Secteur:</span> {selectedEntity.sector}
+                  </div>
+                  <div>
+                    <span className="font-medium">Région:</span> {selectedEntity.region}
+                  </div>
+                  <div>
+                    <span className="font-medium">Statut:</span>{" "}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedEntity.status)}`}>
+                      {selectedEntity.status === "client" ? "Client" : "Prospect"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Priorité:</span>{" "}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedEntity.priority)}`}>
+                      {selectedEntity.priority === "critical" ? "Critique" :
+                       selectedEntity.priority === "high" ? "Haute" :
+                       selectedEntity.priority === "medium" ? "Moyenne" : "Faible"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Données financières</h4>
+                <div className="space-y-2 text-sm">
+                  {selectedEntity.revenue && (
+                    <div>
+                      <span className="font-medium">CA:</span> {formatCurrency(selectedEntity.revenue)}
+                    </div>
+                  )}
+                  {selectedEntity.employees && (
+                    <div>
+                      <span className="font-medium">Employés:</span> {selectedEntity.employees}
+                    </div>
+                  )}
+                  <div>
+                    <span className="font-medium">Score:</span>{" "}
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      <span className="font-semibold">{selectedEntity.score}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Activité</h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="font-medium">Contacts:</span> {selectedEntity.contactsCount}
+                  </div>
+                  <div>
+                    <span className="font-medium">Missions:</span> {selectedEntity.missionsCount}
+                  </div>
+                  {selectedEntity.lastInteraction && (
+                    <div>
+                      <span className="font-medium">Dernière interaction:</span>{" "}
+                      {new Date(selectedEntity.lastInteraction).toLocaleDateString("fr-FR")}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div>
+              <h4 className="font-medium text-gray-900 mb-3">Actions rapides</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Appeler
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  RDV
+                </Button>
+                <Button variant="secondary" size="sm" className="justify-start">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Opportunité
+                </Button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 pt-4 border-t">
+              <Button variant="secondary">
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+              <Button 
+                onClick={() => handleDeleteEntity(selectedEntity.id)}
+                variant="danger"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Supprimer
+              </Button>
+              <Button>
+                Voir tous les détails
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

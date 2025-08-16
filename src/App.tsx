@@ -12,6 +12,7 @@ import Templates from "./components/Pages/DocTemplates/Templates";
 import Reports from "./components/Pages/Reportings/Reports";
 import Settings from "./components/Pages/Settings/Settings";
 import Fidelization from "./components/Pages/Fidelisations/Fidelization";
+import Calendar from "./components/Pages/Calendar/Calendar";
 
 function App() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -36,19 +37,7 @@ function App() {
       case "communications":
         return <Fidelization />;
       case "calendar":
-        return (
-          <div className="p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Calendrier
-            </h1>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-              <p className="text-gray-600">Module en cours de développement</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Planification et suivi des activités avec intégration calendrier
-              </p>
-            </div>
-          </div>
-        );
+        return <Calendar />;
       case "reports":
         return <Reports />;
       case "documents":
