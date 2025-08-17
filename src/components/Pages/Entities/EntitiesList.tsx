@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import EntityForm from "./EntityForm";
+import EntityDetail from "./EntityDetail";
 import {
   Building2,
   Search,
@@ -90,6 +91,7 @@ export const EntitiesList: React.FC = () => {
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
   const [entitiesList, setEntitiesList] = useState<Entity[]>(mockEntities);
+  const [showDetail, setShowDetail] = useState(false);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -342,7 +344,10 @@ export const EntitiesList: React.FC = () => {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                       <div className="py-2">
                         <button 
-                          onClick={() => setSelectedEntity(entity)}
+                          onClick={() => {
+                            setSelectedEntity(entity);
+                            setShowDetail(true);
+                          }}
                           className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
                           <Eye className="w-4 h-4" />
                           <span>Voir les détails</span>
@@ -398,8 +403,8 @@ export const EntitiesList: React.FC = () => {
         />
       </Modal>
 
-      {/* Entity Detail Modal */}
-      {selectedEntity && (
+      {/* Entity Detail Modal - Old version, keeping for reference */}
+      {selectedEntity && !showDetail && (
         <Modal
           isOpen={!!selectedEntity}
           onClose={() => setSelectedEntity(null)}
@@ -521,6 +526,22 @@ export const EntitiesList: React.FC = () => {
             </div>
           </div>
         </Modal>
+      )}
+
+      {/* New Entity Detail Component */}
+      {selectedEntity && showDetail && (
+        <EntityDetail
+          entity={selectedEntity}
+          onClose={() => {
+            setSelectedEntity(null);
+            setShowDetail(false);
+          }}
+          onEdit={() => {
+            setEditingEntity(selectedEntity);
+            setShowDetail(false);
+            setIsModalOpen(true);
+          }}
+        />
       )}
     </div>
   );

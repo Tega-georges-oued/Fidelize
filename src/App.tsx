@@ -13,6 +13,7 @@ import Reports from "./components/Pages/Reportings/Reports";
 import Settings from "./components/Pages/Settings/Settings";
 import Fidelization from "./components/Pages/Fidelisations/Fidelization";
 import Calendar from "./components/Pages/Calendar/Calendar";
+import Interactions from "./components/Pages/Interactions/Interactions";
 
 function App() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -38,6 +39,8 @@ function App() {
         return <Fidelization />;
       case "calendar":
         return <Calendar />;
+      case "interactions":
+        return <Interactions />;
       case "reports":
         return <Reports />;
       case "documents":

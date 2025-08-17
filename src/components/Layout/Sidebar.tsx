@@ -77,6 +77,12 @@ const menuItems = [
     color: "text-teal-600",
   },
   {
+    id: "interactions",
+    label: "Interactions",
+    icon: MessageSquare,
+    color: "text-indigo-600",
+  },
+  {
     id: "reports",
     label: "Rapports",
     icon: TrendingUp,
