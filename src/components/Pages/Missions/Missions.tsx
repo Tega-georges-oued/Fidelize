@@ -19,6 +19,7 @@ import Card from "../../UI/Card";
 import Button from "../../UI/Button";
 import Modal from "../../UI/Modal";
 import Table from "../../UI/Table";
+import MissionDetail from "./MissionDetail";
 
 interface Mission {
   id: number;
@@ -45,6 +46,8 @@ const Missions: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMission, setSelectedMission] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("active");
+  const [showMissionDetail, setShowMissionDetail] = useState(false);
+  const [editingMission, setEditingMission] = useState<any>(null);
 
   const missions: Mission[] = [
     {
@@ -291,7 +294,7 @@ const Missions: React.FC = () => {
     {
       key: "actions",
       title: "Actions",
-      render: () => (
+      render: (mission: Mission) => (
         <div className="relative group">
           <button className="p-2 rounded-lg hover:bg-gray-100">
             <MoreVertical className="h-4 w-4 text-gray-600" />
@@ -302,8 +305,14 @@ const Missions: React.FC = () => {
                 <Eye className="w-4 h-4" />
                 <span>Voir les détails</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
-                <Edit className="w-4 h-4" />
+              <button 
+                onClick={() => {
+                  setSelectedMission(mission);
+                  setShowMissionDetail(true);
+                }}
+                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+              >
+                <Edit className="w-4 w-4" />
                 <span>Modifier</span>
               </button>
               <button className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
@@ -621,6 +630,22 @@ const Missions: React.FC = () => {
             </div>
           </div>
         </Modal>
+      )}
+
+      {/* Mission Detail Component */}
+      {selectedMission && showMissionDetail && (
+        <MissionDetail
+          mission={selectedMission}
+          onClose={() => {
+            setSelectedMission(null);
+            setShowMissionDetail(false);
+          }}
+          onEdit={() => {
+            setEditingMission(selectedMission);
+            setShowMissionDetail(false);
+            setIsModalOpen(true);
+          }}
+        />
       )}
 
       {/* Create Mission Modal */}

@@ -5,7 +5,6 @@ import {
   Search,
   Brain,
   CheckCircle,
-  // AlertTriangle,
   TrendingUp,
   Download,
   Eye,
@@ -14,10 +13,12 @@ import {
 } from "lucide-react";
 import Card from "../../UI/Card";
 import Button from "../../UI/Button";
+import AnalysisDetail from "./AnalysisDetail";
 
 const Analysis: React.FC = () => {
   const [dragActive, setDragActive] = useState(false);
   const [selectedAnalysis, setSelectedAnalysis] = useState<any>(null);
+  const [showAnalysisDetail, setShowAnalysisDetail] = useState(false);
 
   const analyses = [
     {
@@ -319,7 +320,10 @@ const Analysis: React.FC = () => {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => setSelectedAnalysis(analysis)}
+                    onClick={() => {
+                      setSelectedAnalysis(analysis);
+                      setShowAnalysisDetail(true);
+                    }}
                   >
                     <Eye className="h-4 w-4 mr-1" />
                     Détails
@@ -396,7 +400,7 @@ const Analysis: React.FC = () => {
       </div>
 
       {/* Analysis Detail Modal */}
-      {selectedAnalysis && (
+      {selectedAnalysis && !showAnalysisDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -474,6 +478,21 @@ const Analysis: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Analysis Detail Component */}
+      {selectedAnalysis && showAnalysisDetail && (
+        <AnalysisDetail
+          analysis={selectedAnalysis}
+          onClose={() => {
+            setSelectedAnalysis(null);
+            setShowAnalysisDetail(false);
+          }}
+          onEdit={() => {
+            // Handle edit logic
+            setShowAnalysisDetail(false);
+          }}
+        />
       )}
     </div>
   );

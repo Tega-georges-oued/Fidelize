@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { mockEntities as entities } from "../Entities/EntitiesList";
 import Modal from "../../UI/Modal";
+import OpportunityDetail from "./OpportunityDetail";
 
 export interface Opportunity {
   id: string;
@@ -133,6 +134,8 @@ export default function Opportunities() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+  const [showOpportunityDetail, setShowOpportunityDetail] = useState(false);
+  const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
 
   // Filtrage des opportunités
   const filteredOpportunities = mockOpportunities.filter((opportunity) => {
@@ -411,12 +414,23 @@ export default function Opportunities() {
 
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                       <div className="py-2">
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
-                          onClick={() => setSelectedOpportunity(opportunity)}
+                        <button 
+                          onClick={() => {
+                            setSelectedOpportunity(opportunity);
+                            setShowOpportunityDetail(true);
+                          }}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+                        >
                           <Eye className="w-4 h-4" />
                           <span>Voir les détails</span>
                         </button>
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                        <button 
+                          onClick={() => {
+                            setEditingOpportunity(opportunity);
+                            setIsModalOpen(true);
+                          }}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+                        >
                           <Edit className="w-4 h-4" />
                           <span>Modifier</span>
                         </button>
@@ -539,6 +553,22 @@ export default function Opportunities() {
           </div>
         </form>
       </Modal>
+
+      {/* Opportunity Detail Component */}
+      {selectedOpportunity && showOpportunityDetail && (
+        <OpportunityDetail
+          opportunity={selectedOpportunity}
+          onClose={() => {
+            setSelectedOpportunity(null);
+            setShowOpportunityDetail(false);
+          }}
+          onEdit={() => {
+            setEditingOpportunity(selectedOpportunity);
+            setShowOpportunityDetail(false);
+            setIsModalOpen(true);
+          }}
+        />
+      )}
 
       {/* Opportunity Detail Modal */}
       {selectedOpportunity && (
