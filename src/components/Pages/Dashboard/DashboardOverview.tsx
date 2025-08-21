@@ -83,10 +83,15 @@ export const DashboardOverview: React.FC = () => {
       ? (wonOpportunities / mockOpportunities.length) * 100
       : 0;
 
+  // Calculs des missions
+  const activeMissions = 12; // Mock data
+  const completedMissions = 8;
+  const totalRevenue = 125_000_000; // FCFA
+
   const kpis = [
     {
       title: "Entreprises totales",
-      value: totalEntities.toString(),
+      value: totalEntities,
       change: 8,
       changeType: "increase" as const,
       icon: <Building2 className="w-6 h-6 text-white" />,
@@ -94,42 +99,42 @@ export const DashboardOverview: React.FC = () => {
     },
     {
       title: "Contacts actifs",
-      value: totalContacts.toString(),
+      value: totalContacts,
       change: 15,
       changeType: "increase" as const,
       icon: <Users className="w-6 h-6 text-white" />,
       color: "bg-green-500",
     },
     {
-      title: "Opportunités actives",
-      value: activeOpportunities.toString(),
-      change: 12,
+      title: "Missions actives",
+      value: activeMissions,
+      change: 5,
       changeType: "increase" as const,
       icon: <Briefcase className="w-6 h-6 text-white" />,
       color: "bg-orange-500",
     },
     {
-      title: "Opportunités gagnées",
-      value: wonOpportunities.toString(),
-      change: 25,
+      title: "Missions terminées",
+      value: completedMissions,
+      change: 15,
       changeType: "increase" as const,
-      icon: <Target className="w-6 h-6 text-white" />,
+      icon: <CheckCircle className="w-6 h-6 text-white" />,
       color: "bg-purple-500",
     },
     {
-      title: "CA potentiel",
-      value: `${(totalOpportunityValue / 1_000_000).toFixed(1)}M FCFA`,
-      change: 22,
+      title: "CA réalisé",
+      value: `${(totalRevenue / 1_000_000).toFixed(0)}M FCFA`,
+      change: 18,
       changeType: "increase" as const,
       icon: <DollarSign className="w-6 h-6 text-white" />,
       color: "bg-emerald-500",
     },
     {
-      title: "Taux de conversion",
-      value: `${conversionRate.toFixed(0)}%`,
-      change: 5,
+      title: "Opportunités actives",
+      value: activeOpportunities,
+      change: 12,
       changeType: "increase" as const,
-      icon: <TrendingUp className="w-6 h-6 text-white" />,
+      icon: <Target className="w-6 h-6 text-white" />,
       color: "bg-indigo-500",
     },
   ];

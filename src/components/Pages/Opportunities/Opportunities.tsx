@@ -30,6 +30,7 @@ import { fr } from "date-fns/locale";
 import { mockEntities as entities } from "../Entities/EntitiesList";
 import Modal from "../../UI/Modal";
 import OpportunityDetail from "./OpportunityDetail";
+import OpportunityForm from "./OpportunityForm";
 
 export interface Opportunity {
   id: string;
@@ -136,9 +137,10 @@ export default function Opportunities() {
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [showOpportunityDetail, setShowOpportunityDetail] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
 
   // Filtrage des opportunités
-  const filteredOpportunities = mockOpportunities.filter((opportunity) => {
+  const filteredOpportunities = opportunities.filter((opportunity) => {
     const entity = entities.find((e) => e.id === opportunity.entityId);
     const matchesSearch =
       opportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,6 +154,40 @@ export default function Opportunities() {
     const matchesType = typeFilter === "all" || opportunity.type === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
   });
+
+  const handleSaveOpportunity = (opportunityData: Omit<Opportunity, 'id' | 'createdAt'>) => {
+    if (editingOpportunity) {
+      setOpportunities(prev => prev.map(opportunity => 
+        opportunity.id === editingOpportunity.id 
+          ? { 
+              ...opportunityData, 
+              id: editingOpportunity.id,
+              createdAt: editingOpportunity.createdAt
+            }
+          : opportunity
+      ));
+    } else {
+      const newOpportunity: Opportunity = {
+        ...opportunityData,
+        id: Date.now().toString(),
+        createdAt: new Date(),
+      };
+      setOpportunities(prev => [...prev, newOpportunity]);
+    }
+    setEditingOpportunity(null);
+    setIsModalOpen(false);
+  };
+
+  const handleEditOpportunity = (opportunity: Opportunity) => {
+    setEditingOpportunity(opportunity);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteOpportunity = (opportunityId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette opportunité ?')) {
+      setOpportunities(prev => prev.filter(opportunity => opportunity.id !== opportunityId));
+    }
+  };
 
   const getEntityName = (entityId: string) => {
     const entity = entities.find((e) => e.id === entityId);
@@ -221,14 +257,14 @@ export default function Opportunities() {
   // };
 
   // Statistiques
-  const totalOpportunities = mockOpportunities.length;
-  const activeOpportunities = mockOpportunities.filter(
+  const totalOpportunities = opportunities.length;
+  const activeOpportunities = opportunities.filter(
     (o) => o.status === "submitted"
   ).length;
-  const wonOpportunities = mockOpportunities.filter(
+  const wonOpportunities = opportunities.filter(
     (o) => o.status === "won"
   ).length;
-  const totalValue = mockOpportunities.reduce(
+  const totalValue = opportunities.reduce(
     (sum, opp) => sum + (opp.value * opp.probability) / 100,
     0
   );
@@ -251,7 +287,10 @@ export default function Opportunities() {
             Suivez vos opportunités commerciales et offres
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button onClick={() => {
+          setEditingOpportunity(null);
+          setIsModalOpen(true);
+        }}>
           <PlusIcon className="h-5 w-5 mr-2" />
           Nouvelle Opportunité
         </Button>
@@ -434,9 +473,12 @@ export default function Opportunities() {
                           <Edit className="w-4 h-4" />
                           <span>Modifier</span>
                         </button>
-                        <button className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
+                        <button 
+                          onClick={() => handleDeleteOpportunity(opportunity.id)}
+                          className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                        >
                           <Archive className="w-4 h-4" />
-                          <span>Archiver</span>
+                          <span>Supprimer</span>
                         </button>
                       </div>
                     </div>
@@ -451,107 +493,21 @@ export default function Opportunities() {
       {/* Create Opportunity Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Nouvelle Opportunité"
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingOpportunity(null);
+        }}
+        title={editingOpportunity ? "Modifier l'Opportunité" : "Nouvelle Opportunité"}
         size="lg"
       >
-        <form className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Titre de l'opportunité
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Audit annuel pour ALPHA Industries"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Entreprise
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner une entreprise</option>
-                {entities.map((entity) => (
-                  <option key={entity.id} value={entity.id}>
-                    {entity.companyName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type d'opportunité
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner un type</option>
-                <option value="spontaneous">Spontanée</option>
-                <option value="technical">Technique</option>
-                <option value="tender">Appel d'offres</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Valeur estimée (FCFA)
-              </label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="45000000"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Probabilité de succès (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="75"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date limite
-              </label>
-              <input
-                type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Description détaillée de l'opportunité..."
-            ></textarea>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button type="submit">Créer l'Opportunité</Button>
-          </div>
-        </form>
+        <OpportunityForm
+          opportunity={editingOpportunity}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingOpportunity(null);
+          }}
+          onSave={handleSaveOpportunity}
+        />
       </Modal>
 
       {/* Opportunity Detail Component */}

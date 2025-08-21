@@ -1,5 +1,6 @@
 import React from 'react';
-import { Bell, Search, User, Settings, LogOut, Menu } from 'lucide-react';
+import { Search, User, Settings, LogOut, Menu } from 'lucide-react';
+import NotificationCenter from '../UI/NotificationCenter';
 
 interface HeaderProps {
   user?: {
@@ -8,14 +9,52 @@ interface HeaderProps {
     role: string;
   };
   onMenuToggle?: () => void;
-  alertCount?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   user = { firstName: 'Admin', lastName: 'Fidalli', role: 'Directeur' }, 
   onMenuToggle,
-  alertCount = 3 
 }) => {
+  // Mock notifications data
+  const notifications = [
+    {
+      id: '1',
+      type: 'info' as const,
+      title: 'Nouvelle opportunité',
+      message: 'Une nouvelle opportunité a été créée pour ALPHA Industries',
+      timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+      isRead: false,
+    },
+    {
+      id: '2',
+      type: 'warning' as const,
+      title: 'Mission en retard',
+      message: 'La mission "Audit BETA Télécoms" dépasse la date prévue',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      isRead: false,
+    },
+    {
+      id: '3',
+      type: 'success' as const,
+      title: 'Opportunité gagnée',
+      message: 'L\'opportunité GAMMA ONG a été marquée comme gagnée',
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+      isRead: true,
+    },
+  ];
+
+  const handleMarkAsRead = (id: string) => {
+    console.log('Mark as read:', id);
+  };
+
+  const handleMarkAllAsRead = () => {
+    console.log('Mark all as read');
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    console.log('Delete notification:', id);
+  };
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -39,16 +78,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center space-x-4">
           {/* Notifications */}
-          <div className="relative">
-            <button className="p-2 rounded-lg hover:bg-gray-100 relative">
-              <Bell className="w-5 h-5 text-gray-600" />
-              {alertCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {alertCount}
-                </span>
-              )}
-            </button>
-          </div>
+          <NotificationCenter
+            notifications={notifications}
+            onMarkAsRead={handleMarkAsRead}
+            onMarkAllAsRead={handleMarkAllAsRead}
+            onDelete={handleDeleteNotification}
+          />
 
           {/* User Menu */}
           <div className="flex items-center space-x-3">
