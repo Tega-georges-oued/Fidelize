@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import EntityForm from "./EntityForm";
 import EntityDetail from "./EntityDetail";
+import { Entity } from "../../../types";
 import {
   Building2,
   Search,
@@ -21,40 +22,40 @@ import {
 import Modal from "../../UI/Modal";
 import Button from "../../UI/Button";
 
-export interface Entity {
-  id: string;
-  companyName: string;
-  sector: string;
-  region: string;
-  status: "client" | "prospect";
-  priority: "low" | "medium" | "high" | "critical";
-  score: number;
-  revenue?: number;
-  employees?: number;
-  lastInteraction?: string;
-  contactsCount: number;
-  missionsCount: number;
-}
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const mockEntities: Entity[] = [
   {
     id: "1",
     companyName: "ALPHA Industries SA",
+    nif: "1234567890",
     sector: "Industrie",
     region: "Dakar",
+    parentOrganization: "Groupe ALPHA International",
     status: "client",
     priority: "high",
     score: 85,
     revenue: 2500000,
     employees: 150,
-    lastInteraction: "2024-01-15",
-    contactsCount: 8,
-    missionsCount: 3,
+    address: {
+      street: "Avenue Léopold Sédar Senghor",
+      city: "Dakar",
+      postalCode: "BP 1234",
+      country: "Sénégal",
+    },
+    legalInfo: {
+      legalForm: "SA",
+      registrationNumber: "SN-DKR-2020-A-001",
+      vatNumber: "SN123456789",
+      documents: [],
+    },
+    createdAt: new Date("2024-01-15"),
+    updatedAt: new Date("2024-12-01"),
+    lastInteraction: new Date("2024-01-15"),
   },
   {
     id: "2",
     companyName: "BETA Télécoms",
+    nif: "0987654321",
     sector: "Télécommunications",
     region: "Thiès",
     status: "prospect",
@@ -62,13 +63,25 @@ export const mockEntities: Entity[] = [
     score: 72,
     revenue: 1800000,
     employees: 95,
-    lastInteraction: "2024-01-12",
-    contactsCount: 4,
-    missionsCount: 0,
+    address: {
+      street: "Route de Dakar",
+      city: "Thiès",
+      postalCode: "BP 5678",
+      country: "Sénégal",
+    },
+    legalInfo: {
+      legalForm: "SARL",
+      registrationNumber: "SN-THS-2021-B-002",
+      documents: [],
+    },
+    createdAt: new Date("2024-01-12"),
+    updatedAt: new Date("2024-11-28"),
+    lastInteraction: new Date("2024-01-12"),
   },
   {
     id: "3",
     companyName: "GAMMA ONG",
+    nif: "1122334455",
     sector: "ONG",
     region: "Saint-Louis",
     status: "client",
@@ -76,9 +89,20 @@ export const mockEntities: Entity[] = [
     score: 92,
     revenue: 800000,
     employees: 45,
-    lastInteraction: "2024-01-18",
-    contactsCount: 12,
-    missionsCount: 5,
+    address: {
+      street: "Rue Blaise Diagne",
+      city: "Saint-Louis",
+      postalCode: "BP 9012",
+      country: "Sénégal",
+    },
+    legalInfo: {
+      legalForm: "ONG",
+      registrationNumber: "SN-STL-2019-C-003",
+      documents: [],
+    },
+    createdAt: new Date("2024-01-18"),
+    updatedAt: new Date("2024-12-15"),
+    lastInteraction: new Date("2024-01-18"),
   },
 ];
 

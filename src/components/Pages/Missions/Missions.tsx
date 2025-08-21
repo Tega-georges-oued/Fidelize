@@ -19,6 +19,7 @@ import Card from "../../UI/Card";
 import Button from "../../UI/Button";
 import Modal from "../../UI/Modal";
 import Table from "../../UI/Table";
+import MissionForm from "./MissionForm";
 import MissionDetail from "./MissionDetail";
 
 interface Mission {
@@ -47,9 +48,10 @@ const Missions: React.FC = () => {
   const [selectedMission, setSelectedMission] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("active");
   const [showMissionDetail, setShowMissionDetail] = useState(false);
-  const [editingMission, setEditingMission] = useState<any>(null);
+  const [editingMission, setEditingMission] = useState<Mission | null>(null);
+  const [missions, setMissions] = useState<Mission[]>([]);
 
-  const missions: Mission[] = [
+  const mockMissions: Mission[] = [
     {
       id: 1,
       title: "Audit Légal - Société ABC",
@@ -146,6 +148,42 @@ const Missions: React.FC = () => {
       profitability: 0,
     },
   ];
+
+  const handleSaveMission = (missionData: Omit<Mission, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (editingMission) {
+      setMissions(prev => prev.map(mission => 
+        mission.id === editingMission.id 
+          ? { 
+              ...missionData, 
+              id: editingMission.id,
+              createdAt: editingMission.createdAt,
+              updatedAt: new Date()
+            }
+          : mission
+      ));
+    } else {
+      const newMission: Mission = {
+        ...missionData,
+        id: Date.now().toString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setMissions(prev => [...prev, newMission]);
+    }
+    setEditingMission(null);
+    setIsModalOpen(false);
+  };
+
+  const handleEditMission = (mission: Mission) => {
+    setEditingMission(mission);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteMission = (missionId: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette mission ?')) {
+      setMissions(prev => prev.filter(mission => mission.id !== missionId));
+    }
+  };
 
   const missionTypes = [
     { id: "audit", name: "Audit Légal", color: "bg-blue-100 text-blue-800" },
@@ -306,18 +344,18 @@ const Missions: React.FC = () => {
                 <span>Voir les détails</span>
               </button>
               <button 
-                onClick={() => {
-                  setSelectedMission(mission);
-                  setShowMissionDetail(true);
-                }}
+                onClick={() => handleEditMission(mission)}
                 className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
               >
                 <Edit className="w-4 w-4" />
                 <span>Modifier</span>
               </button>
-              <button className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
+              <button 
+                onClick={() => handleDeleteMission(mission.id.toString())}
+                className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+              >
                 <Archive className="w-4 h-4" />
-                <span>Archiver</span>
+                <span>Supprimer</span>
               </button>
             </div>
           </div>
@@ -351,6 +389,10 @@ const Missions: React.FC = () => {
         <Button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center space-x-2"
+          onClick={() => {
+            setEditingMission(null);
+            setIsModalOpen(true);
+          }}
         >
           <Plus className="h-4 w-4" />
           <span>Nouvelle Mission</span>
@@ -651,128 +693,21 @@ const Missions: React.FC = () => {
       {/* Create Mission Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Nouvelle Mission"
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingMission(null);
+        }}
+        title={editingMission ? "Modifier la Mission" : "Nouvelle Mission"}
         size="lg"
       >
-        <form className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Titre de la mission
-              </label>
-              <input
-                type="text"
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Ex: Audit Légal - Société XYZ"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Client
-              </label>
-              <select className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner un client</option>
-                <option value="abc">Société ABC</option>
-                <option value="innovation">Innovation Corp</option>
-                <option value="tech">Tech Solutions</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type de mission
-              </label>
-              <select className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner un type</option>
-                {missionTypes.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Responsable
-              </label>
-              <select className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="">Sélectionner un responsable</option>
-                <option value="marie">Marie Dubois</option>
-                <option value="pierre">Pierre Durand</option>
-                <option value="sophie">Sophie Laurent</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date de début
-              </label>
-              <input
-                type="date"
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date de fin prévue
-              </label>
-              <input
-                type="date"
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Budget (€)
-              </label>
-              <input
-                type="number"
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="45000"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Priorité
-              </label>
-              <select className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option value="basse">Basse</option>
-                <option value="moyenne">Moyenne</option>
-                <option value="haute">Haute</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Description détaillée de la mission..."
-            ></textarea>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button type="submit">Créer la Mission</Button>
-          </div>
-        </form>
+        <MissionForm
+          mission={editingMission}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingMission(null);
+          }}
+          onSave={handleSaveMission}
+        />
       </Modal>
     </div>
   );
