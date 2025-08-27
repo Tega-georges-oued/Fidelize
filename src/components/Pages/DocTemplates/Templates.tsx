@@ -8,21 +8,25 @@ import {
   Copy,
   Download,
   Eye,
-  // Trash2,
+  Trash2,
   Tag,
   Calendar,
 } from "lucide-react";
 import Card from "../../UI/Card";
 import Button from "../../UI/Button";
 import Modal from "../../UI/Modal";
+import TemplateEditor from "./TemplateEditor";
 
 const Templates: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<any>(null);
+  const [templates, setTemplates] = useState(templatesData);
 
-  const templates = [
+  const templatesData = [
     {
       id: 1,
       name: "Proposition Audit Légal",
@@ -354,7 +358,13 @@ const Templates: React.FC = () => {
                   >
                     <Eye className="h-4 w-4 text-gray-600" />
                   </button>
-                  <button className="p-1 hover:bg-gray-100 rounded">
+                  <button 
+                    onClick={() => {
+                      setEditingTemplate(template);
+                      setIsEditorOpen(true);
+                    }}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
                     <Edit className="h-4 w-4 text-gray-600" />
                   </button>
                   <button className="p-1 hover:bg-gray-100 rounded">
@@ -462,6 +472,26 @@ const Templates: React.FC = () => {
             </div>
           </div>
         </Modal>
+      )}
+
+      {/* Template Editor */}
+      {isEditorOpen && (
+        <TemplateEditor
+          template={editingTemplate}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setEditingTemplate(null);
+          }}
+          onSave={(templateData) => {
+            if (editingTemplate) {
+              setTemplates(prev => prev.map(t => 
+                t.id === editingTemplate.id ? { ...t, ...templateData } : t
+              ));
+            }
+            setIsEditorOpen(false);
+            setEditingTemplate(null);
+          }}
+        />
       )}
 
       {/* Create Template Modal */}

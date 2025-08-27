@@ -9,14 +9,19 @@ import {
   BarChart3,
   PieChart,
   Activity,
+  Plus,
+  Settings,
 } from "lucide-react";
 import Card from "../../UI/Card";
 import Chart from "../../UI/Chart";
 import Button from "../../UI/Button";
+import ReportBuilder from "./ReportBuilder";
 
 const Reports: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
   const [selectedReport, setSelectedReport] = useState("overview");
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [customReports, setCustomReports] = useState<any[]>([]);
 
   const reportTypes = [
     { id: "overview", name: "Vue d'ensemble", icon: BarChart3 },
@@ -99,6 +104,13 @@ const Reports: React.FC = () => {
           <Button className="flex items-center space-x-2">
             <Download className="h-4 w-4" />
             <span>Exporter</span>
+          </Button>
+          <Button 
+            onClick={() => setIsBuilderOpen(true)}
+            className="flex items-center space-x-2"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Créer Rapport</span>
           </Button>
         </div>
       </div>

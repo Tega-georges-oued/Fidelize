@@ -49,7 +49,7 @@ const Missions: React.FC = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [showMissionDetail, setShowMissionDetail] = useState(false);
   const [editingMission, setEditingMission] = useState<Mission | null>(null);
-  const [missions, setMissions] = useState<Mission[]>([]);
+  const [missions, setMissions] = useState<Mission[]>(mockMissions);
 
   const mockMissions: Mission[] = [
     {

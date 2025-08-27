@@ -117,6 +117,13 @@ export const EntitiesList: React.FC = () => {
   const [entitiesList, setEntitiesList] = useState<Entity[]>(mockEntities);
   const [showDetail, setShowDetail] = useState(false);
 
+  // Add missing properties to mock entities
+  const enhancedMockEntities = mockEntities.map(entity => ({
+    ...entity,
+    contactsCount: entity.id === "1" ? 3 : entity.id === "2" ? 2 : 1,
+    missionsCount: entity.id === "1" ? 4 : entity.id === "2" ? 2 : 3,
+  }));
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "critical":
@@ -149,9 +156,14 @@ export const EntitiesList: React.FC = () => {
   const handleSaveEntity = (entityData: Omit<Entity, 'id'>) => {
     if (editingEntity) {
       // Modifier une entité existante
-      setEntitiesList(prev => prev.map(entity => 
+      setEntitiesList(prev => prev.map(entity =>
         entity.id === editingEntity.id 
-          ? { ...entityData, id: editingEntity.id }
+          ? { 
+              ...entityData, 
+              id: editingEntity.id,
+              contactsCount: entity.contactsCount || 0,
+              missionsCount: entity.missionsCount || 0
+            }
           : entity
       ));
     } else {
@@ -159,6 +171,8 @@ export const EntitiesList: React.FC = () => {
       const newEntity: Entity = {
         ...entityData,
         id: Date.now().toString(),
+        contactsCount: 0,
+        missionsCount: 0,
       };
       setEntitiesList(prev => [...prev, newEntity]);
     }
@@ -180,7 +194,8 @@ export const EntitiesList: React.FC = () => {
   const filteredEntities = entitiesList.filter((entity) => {
     const matchesSearch =
       entity.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entity.sector.toLowerCase().includes(searchTerm.toLowerCase());
+      entity.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (entity.nif && entity.nif.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus =
       selectedStatus === "all" || entity.status === selectedStatus;
     const matchesSector =

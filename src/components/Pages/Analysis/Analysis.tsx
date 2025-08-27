@@ -257,7 +257,7 @@ const Analysis: React.FC = () => {
               Glissez-déposez vos documents ici
             </p>
             <p className="text-gray-600">
-              Formats supportés: PDF, DOCX, XLSX (max 10MB)
+              Formats supportés: PDF, DOCX, XLSX, TXT (max 10MB)
             </p>
             <div className="flex justify-center space-x-4 mt-4">
               <Button>
@@ -265,8 +265,8 @@ const Analysis: React.FC = () => {
                 Choisir des fichiers
               </Button>
               <Button variant="secondary">
-                <Search className="h-4 w-4 mr-2" />
-                Analyser URL
+                <Brain className="h-4 w-4 mr-2" />
+                Analyse IA
               </Button>
             </div>
           </div>

@@ -9,13 +9,22 @@ import {
   MapPin,
   Filter,
   Search,
+  Edit,
+  Trash2,
+  MoreVertical,
 } from "lucide-react";
 import Card from "../../UI/Card";
 import Button from "../../UI/Button";
+import Modal from "../../UI/Modal";
+import ActivityForm from "./ActivityForm";
 
 const Activities: React.FC = () => {
   const [activeView, setActiveView] = useState<"list" | "calendar">("list");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<any>(null);
+  const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [activities, setActivities] = useState(tasks);
 
   const tasks = [
     {
@@ -133,6 +142,35 @@ const Activities: React.FC = () => {
       activity.contact.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleSaveActivity = (activityData: any) => {
+    if (editingActivity) {
+      setActivities(prev => prev.map(activity => 
+        activity.id === editingActivity.id 
+          ? { ...activityData, id: editingActivity.id }
+          : activity
+      ));
+    } else {
+      const newActivity = {
+        ...activityData,
+        id: Date.now(),
+      };
+      setActivities(prev => [...prev, newActivity]);
+    }
+    setEditingActivity(null);
+    setIsModalOpen(false);
+  };
+
+  const handleEditActivity = (activity: any) => {
+    setEditingActivity(activity);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteActivity = (activityId: number) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')) {
+      setActivities(prev => prev.filter(activity => activity.id !== activityId));
+    }
+  };
+
   const todaytasks = filteredtasks.filter(
     (activity) => activity.date === "2024-01-20"
   );
@@ -175,6 +213,16 @@ const Activities: React.FC = () => {
             </button>
           </div>
           <Button className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>Nouvelle Activité</span>
+          </Button>
+          <Button 
+            onClick={() => {
+              setEditingActivity(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center space-x-2"
+          >
             <Plus className="h-4 w-4" />
             <span>Nouvelle Activité</span>
           </Button>
@@ -441,6 +489,26 @@ const Activities: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Create/Edit Activity Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingActivity(null);
+        }}
+        title={editingActivity ? "Modifier l'Activité" : "Nouvelle Activité"}
+        size="lg"
+      >
+        <ActivityForm
+          activity={editingActivity}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingActivity(null);
+          }}
+          onSave={handleSaveActivity}
+        />
+      </Modal>
     </div>
   );
 };

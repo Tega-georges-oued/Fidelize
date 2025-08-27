@@ -12,6 +12,8 @@ export interface Entity {
   status: "client" | "prospect";
   priority: "low" | "medium" | "high" | "critical";
   score: number;
+  contactsCount?: number;
+  missionsCount?: number;
   address: Address;
   legalInfo: LegalInfo;
   createdAt: Date;

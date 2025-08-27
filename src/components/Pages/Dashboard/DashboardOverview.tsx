@@ -78,10 +78,6 @@ export const DashboardOverview: React.FC = () => {
   const totalOpportunityValue = mockOpportunities
     .filter((o) => o.status === "submitted")
     .reduce((sum, opp) => sum + (opp.value * opp.probability) / 100, 0);
-  const conversionRate =
-    mockOpportunities.length > 0
-      ? (wonOpportunities / mockOpportunities.length) * 100
-      : 0;
 
   // Calculs des missions
   const activeMissions = 12; // Mock data
