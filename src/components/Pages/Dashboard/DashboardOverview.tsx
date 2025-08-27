@@ -18,6 +18,8 @@ import {
 import { useStore } from "../../../store/useStore";
 import { mockEntities } from "../Entities/EntitiesList";
 import { mockOpportunities } from "../Opportunities/Opportunities";
+import AlertBanner from "../../UI/AlertBanner";
+import ProgressBar from "../../UI/ProgressBar";
 
 interface KPICardProps {
   title: string;
@@ -253,6 +255,23 @@ export const DashboardOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Alert Banners */}
+      <div className="space-y-3">
+        <AlertBanner
+          type="warning"
+          title="Mission en retard"
+          message="La mission 'Audit BETA Télécoms' dépasse la date prévue de 3 jours."
+          dismissible
+          onDismiss={() => console.log('Alert dismissed')}
+        />
+        <AlertBanner
+          type="info"
+          message="Nouvelle fonctionnalité: Analyse automatique des documents disponible dans le module Analyse."
+          dismissible
+          onDismiss={() => console.log('Alert dismissed')}
+        />
+      </div>
+
       {/* En-tête */}
       <div className="flex items-center justify-between">
         <div>
@@ -285,6 +304,34 @@ export const DashboardOverview: React.FC = () => {
           <KPICard key={index} {...kpi} />
         ))}
       </div>
+
+      {/* Progress Overview */}
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Progression des Objectifs</h2>
+        <div className="space-y-6">
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">CA Annuel</span>
+              <span className="text-sm text-gray-600">125M / 200M FCFA</span>
+            </div>
+            <ProgressBar value={125} max={200} color="green" showLabel />
+          </div>
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">Nouveaux Clients</span>
+              <span className="text-sm text-gray-600">18 / 25</span>
+            </div>
+            <ProgressBar value={18} max={25} color="blue" showLabel />
+          </div>
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">Missions Terminées</span>
+              <span className="text-sm text-gray-600">8 / 15</span>
+            </div>
+            <ProgressBar value={8} max={15} color="purple" showLabel />
+          </div>
+        </div>
+      </Card>
 
       {/* Contenu principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -11,6 +11,7 @@ import {
   Activity,
   Plus,
   Settings,
+  Eye,
 } from "lucide-react";
 import Card from "../../UI/Card";
 import Chart from "../../UI/Chart";
@@ -337,6 +338,51 @@ const Reports: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Custom Reports Section */}
+      {customReports.length > 0 && (
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Rapports Personnalisés</h3>
+            <Button variant="secondary" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Gérer
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {customReports.map((report) => (
+              <div key={report.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <h4 className="font-medium text-gray-900 mb-2">{report.name}</h4>
+                <p className="text-sm text-gray-600 mb-3">{report.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500">
+                    {report.widgets.length} widgets
+                  </span>
+                  <div className="flex space-x-2">
+                    <Button variant="secondary" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Report Builder Modal */}
+      {isBuilderOpen && (
+        <ReportBuilder
+          onClose={() => setIsBuilderOpen(false)}
+          onSave={(report) => {
+            setCustomReports(prev => [...prev, { ...report, id: Date.now().toString() }]);
+            setIsBuilderOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };
